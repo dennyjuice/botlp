@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 from glob import glob
 import logging
 from random import choice
@@ -19,7 +16,7 @@ def greet_user(bot, update):
     update.message.reply_text(text)
 
 def talk_to_me(bot, update):
-    user_text = u"{}! Cам {}...".format(update.message.chat.first_name, update.message.text)
+    user_text = "{}! Cам {}...".format(update.message.chat.first_name, update.message.text)
     logging.info("User: %s, Chat ID: %s, Message: %s", update.message.chat.username,
                 update.message.chat.id, update.message.text)
     update.message.reply_text(user_text)
