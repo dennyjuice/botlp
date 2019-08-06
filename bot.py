@@ -3,7 +3,8 @@ import logging
 from random import choice
 from emoji import emojize
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ReplyKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, RegexHandler
 
 import settings
 
@@ -15,11 +16,12 @@ def greet_user(bot, update, user_data):
     emo = get_user_emo(user_data)
     user_data['emo'] = emo
     text = 'Че нада, пля? {}'.format(emo)
-    update.message.reply_text(text)
+    my_keyboard = ReplyKeyboardMarkup([['Прислать кошака', 'Сменить аватарку']])
+    update.message.reply_text(text, reply_markup = my_keyboard)
 
 def talk_to_me(bot, update, user_data):
     emo = get_user_emo(user_data)
-    user_text = "{}! Cам {}... {}".format(update.message.chat.first_name, update.message.text, user_data['emo'])
+    user_text = "{}! Cам {}... {}".format(update.message.chat.first_name, update.message.text, emo)
     logging.info("User: %s, Chat ID: %s, Message: %s", update.message.chat.username,
                 update.message.chat.id, update.message.text)
     update.message.reply_text(user_text)
@@ -36,6 +38,12 @@ def get_user_emo(user_data):
         user_data['emo'] = emojize(choice(settings.USER_EMOJI), use_aliases=True)
         return user_data['emo']
 
+def change_avatar(bot, update, user_data):
+    if 'emo' in user_data:
+        del user_data['emo']
+    emo = get_user_emo(user_data)
+    update.message.reply_text('Готово: {}'.format(emo))
+
 def main():
     mybot = Updater(settings.API_KEY)
     
@@ -44,6 +52,8 @@ def main():
     dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', greet_user, pass_user_data=True))
     dp.add_handler(CommandHandler('cat', send_cat_picture, pass_user_data=True))
+    dp.add_handler(RegexHandler('^(Прислать кошака)$', send_cat_picture, pass_user_data=True))
+    dp.add_handler(RegexHandler('^(Сменить аватарку)$', change_avatar, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me, pass_user_data=True))
 
     mybot.start_polling()
