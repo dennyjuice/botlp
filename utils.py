@@ -17,14 +17,15 @@ def get_keyboard():
     location_button = KeyboardButton('Прислать координаты', request_location=True)
     my_keyboard = ReplyKeyboardMarkup([
                                         ['Прислать кошака', 'Сменить аватарку'],
-                                        [contact_button, location_button]
+                                        [contact_button, location_button],
+                                        ['Заполнить анкету']
                                         ], resize_keyboard=True)
     return my_keyboard
 
 def isconcepts(file_name):
     app = ClarifaiApp(api_key=settings.CLARIFY_KEY)
     model = app.public_models.general_model
-    response = model.predict_by_filename(file_name, max_concepts=5)
+    response = model.predict_by_filename(file_name, max_concepts=1)
     if response['status']['code'] == 10000:
         return response['outputs'][0]['data']['concepts']
     else:
