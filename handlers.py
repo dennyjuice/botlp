@@ -3,7 +3,8 @@ from glob import glob
 from random import choice
 from emoji import emojize
 
-from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup
+from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode
+from telegram.ext import ConversationHandler
 
 import logging
 from utils import get_keyboard, get_user_emo, isconcepts
@@ -78,3 +79,25 @@ def anketa_get_name(bot, update, user_data):
             reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True)
         )
         return "rating"
+
+def anketa_rating(bot, update, user_data):
+    user_data['anketa_rating'] = update.message.text
+    update.message.reply_text("""Напишите отзыв в свободной форме
+или /skip чтобы пропустить этот шаг.""")
+    return "comment"
+
+def anketa_comment(bot, update, user_data):
+    user_data['anketa_comment'] = update.message.text
+    text = """
+<b>Фамилия Имя:</b> {anketa_name}
+<b>Оценка:</b> {anketa_rating}
+<b>Комментарий:</b> {anketa_comment}""".format(**user_data)
+    update.message.reply_text(text, reply_markup=get_keyboard(), parse_mode=ParseMode.HTML)
+    return ConversationHandler.END
+
+def anketa_skip_comment(bot, update, user_data):
+    text = """
+<b>Фамилия Имя:</b> {anketa_name}
+<b>Оценка:</b> {anketa_rating}""".format(**user_data)
+    update.message.reply_text(text, reply_markup=get_keyboard(), parse_mode=ParseMode.HTML)
+    return ConversationHandler.END

@@ -17,7 +17,10 @@ def main():
     anketa = ConversationHandler(
         entry_points=[RegexHandler('^(Заполнить анкету)$', anketa_start, pass_user_data=True)],
         states={
-            "name": [MessageHandler(Filters.text, anketa_get_name, pass_user_data=True)]
+            "name": [MessageHandler(Filters.text, anketa_get_name, pass_user_data=True)],
+            "rating": [RegexHandler('^(1|2|3|4|5)$', anketa_rating, pass_user_data=True)],
+            "comment": [MessageHandler(Filters.text, anketa_comment, pass_user_data=True),
+                        CommandHandler('skip', anketa_skip_comment, pass_user_data=True)]
         },
         fallbacks=[]
     )
