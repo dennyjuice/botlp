@@ -48,7 +48,7 @@ def check_user_photo(bot, update, user_data):
     filename = os.path.join('downloads', '{}.jpg'.format(photo_file.file_id))
     photo_file.download(filename)
     image_has_cat = False
-    concepts = isconcepts(filename)
+    concepts = isconcepts(filename, 1)
     for concept in concepts:
         if (concept['name'] == 'кошка' or concept['name'] == 'котенок'):
             image_has_cat = True
