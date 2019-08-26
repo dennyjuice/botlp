@@ -101,3 +101,6 @@ def anketa_skip_comment(bot, update, user_data):
 <b>Оценка:</b> {anketa_rating}""".format(**user_data)
     update.message.reply_text(text, reply_markup=get_keyboard(), parse_mode=ParseMode.HTML)
     return ConversationHandler.END
+
+def dontknow(bot, update, user_data):
+    update.message.reply_text('Не понимаю')

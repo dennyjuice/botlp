@@ -22,7 +22,11 @@ def main():
             "comment": [MessageHandler(Filters.text, anketa_comment, pass_user_data=True),
                         CommandHandler('skip', anketa_skip_comment, pass_user_data=True)]
         },
-        fallbacks=[]
+        fallbacks=[MessageHandler(
+            Filters.text | Filters.video | Filters.photo | Filters.document,
+            dontknow,
+            pass_user_data=True
+        )]
     )
 
     dp = mybot.dispatcher
