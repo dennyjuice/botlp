@@ -1,3 +1,7 @@
 bot.log
 settings.py
 downloads
+telegabot.code-workspace
+.vscode
+env
+__pycache__
