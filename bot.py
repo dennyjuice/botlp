@@ -9,10 +9,16 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
                     level=logging.INFO,
                     filename='bot.log')
 
+subscribers = set()
+
 def main():
     mybot = Updater(settings.API_KEY)
     
     logging.info("I'm back")
+
+    dp = mybot.dispatcher
+
+    mybot.job_queue.run_repeating(send_updates, 5)
 
     anketa = ConversationHandler(
         entry_points=[RegexHandler('^(Заполнить анкету)$', anketa_start, pass_user_data=True)],
@@ -29,12 +35,13 @@ def main():
         )]
     )
 
-    dp = mybot.dispatcher
     dp.add_handler(CommandHandler('start', greet_user, pass_user_data=True))
     dp.add_handler(CommandHandler('cat', send_cat_picture, pass_user_data=True))
     dp.add_handler(RegexHandler('^(Прислать кошака)$', send_cat_picture, pass_user_data=True))
     dp.add_handler(RegexHandler('^(Сменить аватарку)$', change_avatar, pass_user_data=True))
     dp.add_handler(anketa)
+    dp.add_handler(CommandHandler('subscribe', subscribe))
+    dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
     dp.add_handler(MessageHandler(Filters.contact, get_contact, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.location, get_location, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.photo, check_user_photo, pass_user_data=True))

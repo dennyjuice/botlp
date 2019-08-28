@@ -7,6 +7,7 @@ from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
 
 import logging
+from bot import subscribers
 from utils import get_keyboard, get_user_emo, isconcepts
 
 def greet_user(bot, update, user_data):
@@ -104,3 +105,18 @@ def anketa_skip_comment(bot, update, user_data):
 
 def dontknow(bot, update, user_data):
     update.message.reply_text('Не понимаю')
+
+def subscribe(bot, update):
+    subscribers.add(update.message.chat_id)
+    update.message.reply_text('Вы подписались')
+
+def unsubscribe(bot, update):
+    if update.message.chat_id in subscribers:
+        subscribers.remove(update.message.chat_id)
+        update.message.reply_text('Вы отписались')
+    else:
+        update.message.reply_text('Вы и не подписывались.. Жмите /subscribe')
+
+def send_updates(bot, job):
+    for chat_id in subscribers:
+        bot.send_message(chat_id, 'FUCK')
