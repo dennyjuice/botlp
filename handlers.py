@@ -5,6 +5,7 @@ from emoji import emojize
 
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
+from telegram.ext import messagequeue as mq
 
 import logging
 from bot import subscribers
@@ -117,6 +118,7 @@ def unsubscribe(bot, update):
     else:
         update.message.reply_text('Вы и не подписывались.. Жмите /subscribe')
 
+@mq.queuedmessage
 def send_updates(bot, job):
     for chat_id in subscribers:
         bot.send_message(chat_id, 'FUCK')

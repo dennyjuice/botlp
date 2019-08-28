@@ -1,7 +1,7 @@
 import logging
 
 from telegram.ext import Updater, CommandHandler, MessageHandler, RegexHandler, ConversationHandler, Filters
-
+from telegram.ext import messagequeue as mq
 from handlers import *
 import settings
 
@@ -13,6 +13,8 @@ subscribers = set()
 
 def main():
     mybot = Updater(settings.API_KEY)
+    mybot.bot._msg_queue = mq.MessageQueue()
+    mybot.bot._is_messages_queued_default = True
     
     logging.info("I'm back")
 
