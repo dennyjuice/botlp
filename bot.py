@@ -44,6 +44,7 @@ def main():
     dp.add_handler(anketa)
     dp.add_handler(CommandHandler('subscribe', subscribe))
     dp.add_handler(CommandHandler('unsubscribe', unsubscribe))
+    dp.add_handler(CommandHandler('alarm', set_alarm, pass_args=True, pass_job_queue=True))
     dp.add_handler(MessageHandler(Filters.contact, get_contact, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.location, get_location, pass_user_data=True))
     dp.add_handler(MessageHandler(Filters.photo, check_user_photo, pass_user_data=True))

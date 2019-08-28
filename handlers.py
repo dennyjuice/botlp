@@ -122,3 +122,14 @@ def unsubscribe(bot, update):
 def send_updates(bot, job):
     for chat_id in subscribers:
         bot.send_message(chat_id, 'FUCK')
+
+def set_alarm(bot, update, args, job_queue):
+    try:
+        seconds = abs(int(args[0]))
+        job_queue.run_once(alarm, seconds, context=update.message.chat_id)
+    except(IndexError, ValueError):
+        update.message.reply_text('Введите количество секунд после /alarm')
+
+@mq.queuedmessage
+def alarm(bot, job):
+    bot.send_message(job.context, 'Пип Пип Пип Пип, Будильник пищит!!!')
