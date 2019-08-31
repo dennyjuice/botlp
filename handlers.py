@@ -9,19 +9,22 @@ from telegram.ext import messagequeue as mq
 
 import logging
 from bot import subscribers
-from utils import get_keyboard, get_user_emo, isconcepts
+from db import db, get_or_create_user, get_user_emo
+from utils import get_keyboard, isconcepts
 
 def greet_user(bot, update, user_data):
-    emo = get_user_emo(user_data)
+    user = get_or_create_user(db, update.effective_user, update.message)
+    emo = get_user_emo(db, user)
     user_data['emo'] = emo
     text = 'Че нада, пля? {}'.format(emo)
     update.message.reply_text(text, reply_markup = get_keyboard())
 
 def talk_to_me(bot, update, user_data):
-    emo = get_user_emo(user_data)
-    user_text = "{}! Cам {}... {}".format(update.message.chat.first_name, update.message.text, emo)
-    logging.info("User: %s, Chat ID: %s, Message: %s", update.message.chat.username,
-                update.message.chat.id, update.message.text)
+    user = get_or_create_user(db, update.effective_user, update.message)
+    emo = get_user_emo(db, user)
+    user_text = "{}! Cам {}... {}".format(user['first_name'], update.message.text, emo)
+    logging.info("User: %s, Chat ID: %s, Message: %s", user['username'],
+                user['chat_id'], update.message.text)
     update.message.reply_text(user_text, reply_markup = get_keyboard())
 
 def send_cat_picture(bot, update, user_data):
@@ -30,18 +33,21 @@ def send_cat_picture(bot, update, user_data):
     bot.send_photo(chat_id = update.message.chat_id, photo = open(cat_pic, 'rb'), reply_markup = get_keyboard())
 
 def change_avatar(bot, update, user_data):
-    if 'emo' in user_data:
-        del user_data['emo']
-    emo = get_user_emo(user_data)
+    user = get_or_create_user(db, update.effective_user, update.message)
+    if 'emo' in user:
+        del user['emo']
+    emo = get_user_emo(db, user)
     update.message.reply_text('Готово: {}'.format(emo), reply_markup = get_keyboard())
 
 def get_contact(bot, update, user_data):
+    user = get_or_create_user(db, update.effective_user, update.message)
     print(update.message.contact)
-    update.message.reply_text('Готово: {}'.format(get_user_emo(user_data)), reply_markup = get_keyboard())
+    update.message.reply_text('Готово: {}'.format(get_user_emo(db, user)), reply_markup = get_keyboard())
 
 def get_location(bot, update, user_data):
+    user = get_or_create_user(db, update.effective_user, update.message)
     print(update.message.location)
-    update.message.reply_text('Готово: {}'.format(get_user_emo(user_data)), reply_markup = get_keyboard())
+    update.message.reply_text('Готово: {}'.format(get_user_emo(db, user)), reply_markup = get_keyboard())
 
 def check_user_photo(bot, update, user_data):
     update.message.reply_text('Обрабатываю фото')
