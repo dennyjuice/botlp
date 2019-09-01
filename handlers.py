@@ -3,13 +3,13 @@ from glob import glob
 from random import choice
 from emoji import emojize
 
-from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode
+from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode, error
 from telegram.ext import ConversationHandler
 from telegram.ext import messagequeue as mq
 
 import logging
 from bot import subscribers
-from db import db, get_or_create_user, get_user_emo
+from db import db, get_or_create_user, get_user_emo, toggle_subscription, get_subscribers
 from utils import get_keyboard, isconcepts
 
 def greet_user(bot, update, user_data):
@@ -114,20 +114,27 @@ def dontknow(bot, update, user_data):
     update.message.reply_text('Не понимаю')
 
 def subscribe(bot, update):
-    subscribers.add(update.message.chat_id)
+    user = get_or_create_user(db, update.effective_user, update.message)
+    if not user.get('subscribed'):
+        toggle_subscription(db, user)
     update.message.reply_text('Вы подписались')
 
 def unsubscribe(bot, update):
-    if update.message.chat_id in subscribers:
-        subscribers.remove(update.message.chat_id)
+    user = get_or_create_user(db, update.effective_user, update.message)
+    if user.get('subscribed'):
+        toggle_subscription(db, user)
         update.message.reply_text('Вы отписались')
     else:
         update.message.reply_text('Вы и не подписывались.. Жмите /subscribe')
 
 @mq.queuedmessage
 def send_updates(bot, job):
-    for chat_id in subscribers:
-        bot.send_message(chat_id, 'FUCK')
+    for user in get_subscribers(db):
+        try:
+            bot.send_message(user['chat_id'], 'FUCK')
+        except error.BadRequest:
+            print('Chat {} not found'.format(user['chat_id']))
+            toggle_subscription(db, user)
 
 def set_alarm(bot, update, args, job_queue):
     try:
