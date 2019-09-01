@@ -20,7 +20,7 @@ def get_or_create_user(db, effective_user, message):
     return user
 
 
-def get_user_emo(user_data):
+def get_user_emo(db, user_data):
     if not 'emo' in user_data:
         user_data['emo'] = choice(settings.USER_EMOJI)
         db.users.update_one(
