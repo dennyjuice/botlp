@@ -3,7 +3,8 @@ from glob import glob
 from random import choice
 from emoji import emojize
 
-from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode, error
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove,\
+    ReplyKeyboardMarkup, ParseMode, error
 from telegram.ext import ConversationHandler
 from telegram.ext import messagequeue as mq
 
@@ -126,6 +127,22 @@ def unsubscribe(bot, update):
         update.message.reply_text('Вы отписались')
     else:
         update.message.reply_text('Вы и не подписывались.. Жмите /subscribe')
+
+def show_inline(bot, update, user_data):
+    inlinekbd = [[InlineKeyboardButton("Смешно", callback_data="1"),
+                    InlineKeyboardButton("Не смешно", callback_data="0")]]
+    kbd_markup = InlineKeyboardMarkup(inlinekbd)
+    update.message.reply_text("Заходят в бар бесконечное число математиков",
+        reply_markup=kbd_markup)
+
+def inline_button_pressed(bot, update):
+    query = update.callback_query
+    try:
+        user_choice = int(query.data)
+        text = ":-)" if user_choice > 0 else ":-("
+    except TypeError:
+        text = "Что-то пошло не так"
+    bot.edit_message_text(text=text, chat_id=query.message.chat.id, message_id=query.message.message_id)
 
 @mq.queuedmessage
 def send_updates(bot, job):
