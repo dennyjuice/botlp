@@ -9,7 +9,7 @@ def get_keyboard():
     my_keyboard = ReplyKeyboardMarkup([
                                         ['Прислать кошака', 'Сменить аватарку'],
                                         [contact_button, location_button],
-                                        ['Заполнить анкету', 'Прислать шутку']
+                                        ['Заполнить анкету']
                                         ], resize_keyboard=True)
     return my_keyboard
 

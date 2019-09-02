@@ -31,7 +31,10 @@ def talk_to_me(bot, update, user_data):
 def send_cat_picture(bot, update, user_data):
     cat_list = glob('images/cat*.jp*g')
     cat_pic = choice(cat_list)
-    bot.send_photo(chat_id = update.message.chat_id, photo = open(cat_pic, 'rb'), reply_markup = get_keyboard())
+    inlinekbd = [[InlineKeyboardButton(emojize(":thumbs_up:"), callback_data="cat_good"),
+                    InlineKeyboardButton(emojize(":thumbs_down:"), callback_data="cat_bad")]]
+    kbd_markup = InlineKeyboardMarkup(inlinekbd)
+    bot.send_photo(chat_id = update.message.chat_id, photo = open(cat_pic, 'rb'), reply_markup = kbd_markup)
 
 def change_avatar(bot, update, user_data):
     user = get_or_create_user(db, update.effective_user, update.message)
@@ -128,21 +131,12 @@ def unsubscribe(bot, update):
     else:
         update.message.reply_text('Вы и не подписывались.. Жмите /subscribe')
 
-def show_inline(bot, update, user_data):
-    inlinekbd = [[InlineKeyboardButton("Смешно", callback_data="1"),
-                    InlineKeyboardButton("Не смешно", callback_data="0")]]
-    kbd_markup = InlineKeyboardMarkup(inlinekbd)
-    update.message.reply_text("Заходят в бар бесконечное число математиков",
-        reply_markup=kbd_markup)
-
 def inline_button_pressed(bot, update):
     query = update.callback_query
-    try:
-        user_choice = int(query.data)
-        text = ":-)" if user_choice > 0 else ":-("
-    except TypeError:
-        text = "Что-то пошло не так"
-    bot.edit_message_text(text=text, chat_id=query.message.chat.id, message_id=query.message.message_id)
+    if query.data in ['cat_good', 'cat_bad']:
+        text = "Круто!" if query.data == 'cat_good' else "Печаль:("
+
+    bot.edit_message_caption(caption=text, chat_id=query.message.chat.id, message_id=query.message.message_id)
 
 @mq.queuedmessage
 def send_updates(bot, job):

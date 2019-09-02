@@ -42,7 +42,6 @@ def main():
     dp.add_handler(CommandHandler('cat', send_cat_picture, pass_user_data=True))
     dp.add_handler(RegexHandler('^(Прислать кошака)$', send_cat_picture, pass_user_data=True))
     dp.add_handler(RegexHandler('^(Сменить аватарку)$', change_avatar, pass_user_data=True))
-    dp.add_handler(RegexHandler('^(Прислать шутку)$', show_inline, pass_user_data=True))
     dp.add_handler(CallbackQueryHandler(inline_button_pressed))
     dp.add_handler(anketa)
     dp.add_handler(CommandHandler('subscribe', subscribe))
