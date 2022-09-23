@@ -17,7 +17,7 @@ isort==4.3.21
 jsonschema==2.6.0
 lazy-object-proxy==1.4.2
 mccabe==0.6.1
-protobuf==3.9.1
+protobuf==3.18.3
 pycparser==2.19
 pylint==2.3.1
 pymongo==3.9.0
